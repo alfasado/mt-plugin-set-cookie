@@ -16,6 +16,9 @@ function smarty_function_mtsetcookie ( $args, &$ctx ) {
         $expires = 0;
     }
     $secure = $args[ 'secure' ];
+    if ( $secure ) {
+        $secure = TRUE;
+    }
     if ( setcookie( $name, $value, $expire, $path, $domain, $secure ) ) {
         if ( $cookie_val != $value ) {
             if ( $reload ) {

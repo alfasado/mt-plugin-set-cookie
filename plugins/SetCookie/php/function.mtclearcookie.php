@@ -11,6 +11,9 @@ function smarty_function_mtclearcookie ( $args, &$ctx ) {
     $domain = $args[ 'domain' ];
     $expires = time() - 3600;
     $secure  = $args[ 'secure' ];
+    if ( $secure ) {
+        $secure = TRUE;
+    }
     if ( setcookie( $name, $value, $expire, $path, $domain, $secure ) ) {
         if ( $cookie_val != $value ) {
             if ( $reload ) {
