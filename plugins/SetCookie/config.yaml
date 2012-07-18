@@ -1,0 +1,79 @@
+id  : SetCookie
+key : setcookie
+name: SetCookie
+version: 0.1
+author_name: Alfasado Inc.
+author_link: http://alfasado.net/
+description: 'Function Tag MTSetCookie and MTClearCookie.'
+tags:
+    function:
+        setcookie: >
+                sub {
+                    my ( $ctx, $args, $cond ) = @_;
+                    my $app = MT->instance;
+                    if ( ( ref $app ) !~ /^MT::App::/ ) {
+                        return '';
+                    }
+                    my $reload = $args->{ reload };
+                    my $name = $args->{ name };
+                    my $cookie_val = $app->cookie_val( $name );
+                    my $value = $args->{ value };
+                    my $path = $args->{ path } || '/';
+                    my $domain = $args->{ domain };
+                    my $expires = $args->{ expires };
+                    my $secure = $args->{ secure };
+                    my %kookee = (
+                        -name  => $name,
+                        -value => $value,
+                        -path  => $path,
+                    );
+                    $kookee{ -domain } = $domain if $domain;
+                    $kookee{ -expires } = $expires if $expires;
+                    $kookee{ -secure } = $secure if $secure;
+                    if ( $app->bake_cookie( %kookee ) ) {
+                        if ( $reload ) {
+                            if ( $cookie_val ne $value ) {
+                                my $return_url = $app->base . $app->uri;
+                                if ( my $query_string = $app->query_string ) {
+                                    $return_url .= '?' . $query_string;
+                                }
+                                $app->redirect( $return_url );
+                            }
+                        }
+                    }
+                }
+        clearcookie: >
+                sub {
+                    my ( $ctx, $args, $cond ) = @_;
+                    my $app = MT->instance;
+                    if ( ( ref $app ) !~ /^MT::App::/ ) {
+                        return '';
+                    }
+                    my $reload = $args->{ reload };
+                    my $name = $args->{ name };
+                    my $cookie_val = $app->cookie_val( $name );
+                    my $value = '';
+                    my $path = $args->{ path } || '/';
+                    my $domain = $args->{ domain };
+                    my $expires = '-1y';
+                    my $secure = $args->{ secure };
+                    my %kookee = (
+                        -name  => $name,
+                        -value => $value,
+                        -path  => $path,
+                        -expires => $expires,
+                    );
+                    $kookee{ -domain } = $domain if $domain;
+                    $kookee{ -secure } = $secure if $secure;
+                    if ( $app->bake_cookie( %kookee ) ) {
+                        if ( $reload ) {
+                            if ( $cookie_val ne $value ) {
+                                my $return_url = $app->base . $app->uri;
+                                if ( my $query_string = $app->query_string ) {
+                                    $return_url .= '?' . $query_string;
+                                }
+                                $app->redirect( $return_url );
+                            }
+                        }
+                    }
+                }
